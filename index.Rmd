@@ -1,0 +1,8 @@
+---
+title: "Welcome to my Website!"
+output: 
+  rmarkdown::html_document:
+    theme: lumen
+---
+
+Here I will be posting various projects in r studio. 

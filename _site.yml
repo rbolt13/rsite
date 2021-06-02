@@ -1,0 +1,12 @@
+---
+name: "my-website"
+navbar:
+  title: "Randi Bolt"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "About"
+      href: about.html
+    - text: "NYC Flights Data"
+      href: nycflightsdata.html
+---

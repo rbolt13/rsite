@@ -1,0 +1,17 @@
+---
+title: "NYC Flight Data"
+output: 
+  rmarkdown::html_document:
+    theme: lumen
+---
+
+Week 6 in STAT-363 : Introduction to R we worked with the 2013 NYC Flights data. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(magrittr)
+library(dplyr)
+library(nycflights13)
+library(pander)
+library(tidyr)
+```
