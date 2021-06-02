@@ -5,10 +5,9 @@ knit: (function(input_file, encoding) {
   rmarkdown::render(input_file,
  encoding=encoding,
  output_file=file.path(dirname(input_file), out_dir, 'nycflightsdata.html'))})
-output:
-  prettydoc::html_pretty:
-    theme: cayman
-    highlight: github
+output: 
+  rmarkdown::html_document:
+    theme: lumen
 ---
 
 Week 6 in STAT-363 : Introduction to R we worked with the 2013 NYC Flights data. 
