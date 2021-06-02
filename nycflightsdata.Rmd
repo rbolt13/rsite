@@ -54,6 +54,31 @@ flights %>%
 
 Analysis : American Airlines had the most flights with the least amount of mean duration time of the four carriers chosen. 
 
+What was the shortest flight out of each airport in terms of distance? In terms of duration?
+
+```{r}
+flights %>%
+  group_by(origin) %>%
+  summarise(min_dist=min(distance,na.rm=T),
+            min_air_time=min(air_time,na.rm=T)) %>% 
+  gt() %>%
+  tab_header(title = md("Shortest Flight")) %>%
+  tab_footnote(
+    footnote = "Newark Liberty International Airport",
+    locations = cells_body(columns = origin, rows = 1)) %>%
+  tab_footnote(
+    footnote = "John F. Kennedy International Airport",
+    locations = cells_body(columns = origin, rows = 2)) %>%
+  tab_footnote(
+    footnote = "LaGuardian Airport",
+    locations = cells_body(columns = origin, rows = 3)) %>%
+  cols_label(origin = "Airport",
+             min_dist = "By Distance",
+             min_air_time = "By Flight Time")
+```
+
+Analysis : Newark Liberty International Airport is has the shortest flight by both time and distance. 
+
 ... [to be continued]
 
 In the following week we continued to play with the nyc flights 2013 data and various joins. To being we loaded the data sets flights, airports, and planes.  
