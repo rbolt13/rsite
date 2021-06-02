@@ -19,4 +19,32 @@ library(dplyr)
 library(nycflights13)
 library(pander)
 library(tidyr)
+library(gt)
 ```
+
+To begin we used 'dplyr' to figure out how many flights to Los Angeles (LAX) did each of the legacy carriers (AA, UA, DL or US) have in May from JFK, and what was their average duration?
+
+```{r}
+flights %>%
+  filter(dest == "LAX", 
+         month == 5, 
+         origin == "JFK", 
+         carrier%in%c("AA", "UA", "DL", "US")) %>%
+  group_by(carrier) %>%
+  summarise(num_flights = n(),
+            mean_duration = mean(air_time,na.rm=T)) %>%
+  arrange(desc(mean_duration)) %>%
+  gt() %>%
+  tab_header(
+    title = md("Mean Duration of Flights in May"),
+    subtitle = "From American Airlines (AA), United Airlines (UA), Delta Air (DL), and US"
+  ) %>%
+  cols_label(
+    carrier = "Carrier",
+    num_flights = "Number of Flights",
+    mean_duration = "Mean Duration") %>%
+  tab_source_note(
+    source_note = "Note: There were no flights made from LAX to NYC in May 2013"
+  )
+```
+
