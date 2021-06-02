@@ -26,9 +26,8 @@ library(maps)
 
 To begin we used 'dplyr' to figure out how many flights to Los Angeles (LAX) did each of the legacy carriers (AA, UA, DL or US) have in May from JFK, and what was their average duration. 
 
-Below I have also displayed the data using gt(). 
 
-```{r}
+```{r, echo=F}
 flights %>%
   filter(dest == "LAX", 
          month == 5, 
@@ -52,11 +51,12 @@ flights %>%
   )
 ```
 
+
 Analysis : American Airlines had the most flights with the least amount of mean duration time of the four carriers chosen. 
 
 What was the shortest flight out of each airport in terms of distance? In terms of duration?
 
-```{r}
+```{r, echo=F}
 flights %>%
   group_by(origin) %>%
   summarise(min_dist=min(distance,na.rm=T),
@@ -81,19 +81,18 @@ Analysis : Newark Liberty International Airport is has the shortest flight by bo
 
 ... [to be continued]
 
-In the following week we continued to play with the nyc flights 2013 data and various joins. To being we loaded the data sets flights, airports, and planes.  
+In the following week we continued to play with the nyc flights 2013 data and various joins. 
 
-
-```{r eval=F}
+```{r, echo=F}
 # Load up datasets from `nycflights13`
 data(flights)
 data(airports)
 data(planes)
 ```
 
-Our task : To compute the average delay by destination, then join on the airports data frame so you can show the spatial distribution of delays. You might want to use the size or colour of the points to display the average delay for each airport.
+Our task : To compute the average delay by destination, then join on the airports data frame so we can show the spatial distribution of delays. 
 
-```{r}
+```{r, echo=F}
 #avg.dest.delay : modified dataset 
 #group flights data set by destination 
 #summarize takes each level of destination and summarize mean of arr_delay 
