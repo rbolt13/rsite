@@ -5,9 +5,7 @@ knit: (function(input_file, encoding) {
   rmarkdown::render(input_file,
  encoding=encoding,
  output_file=file.path(dirname(input_file), out_dir, 'about.html'))})
-output:  
-  rmarkdown::html_document:
-    theme: lumen
+output: html_documment
 ---
 
 Here is some information about me and the things I will be posting.

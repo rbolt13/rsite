@@ -10,7 +10,5 @@ navbar:
       href: about.html
     - text: "NYC Flights Data"
       href: nycflightsdata.html
-output: 
-  rmarkdown::html_document:
-    theme: lumen
+output: html_documment
 ---

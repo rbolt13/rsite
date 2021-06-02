@@ -5,9 +5,7 @@ knit: (function(input_file, encoding) {
   rmarkdown::render(input_file,
  encoding=encoding,
  output_file=file.path(dirname(input_file), out_dir, 'nycflightsdata.html'))})
-output: 
-  rmarkdown::html_document:
-    theme: lumen
+output: html_documment
 ---
 
 Week 6 in STAT-363 : Introduction to R we worked with the 2013 NYC Flights data. 
@@ -22,7 +20,9 @@ library(tidyr)
 library(gt)
 ```
 
-To begin we used 'dplyr' to figure out how many flights to Los Angeles (LAX) did each of the legacy carriers (AA, UA, DL or US) have in May from JFK, and what was their average duration?
+To begin we used 'dplyr' to figure out how many flights to Los Angeles (LAX) did each of the legacy carriers (AA, UA, DL or US) have in May from JFK, and what was their average duration. 
+
+Below I have also displayed the data using gt(). 
 
 ```{r}
 flights %>%
@@ -36,7 +36,7 @@ flights %>%
   arrange(desc(mean_duration)) %>%
   gt() %>%
   tab_header(
-    title = md("Mean Duration of Flights in May"),
+    title = md("Mean Duration of Flights from LAX to JFK in May"),
     subtitle = "From American Airlines (AA), United Airlines (UA), Delta Air (DL), and US"
   ) %>%
   cols_label(
