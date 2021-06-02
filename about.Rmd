@@ -5,8 +5,18 @@ knit: (function(input_file, encoding) {
   rmarkdown::render(input_file,
  encoding=encoding,
  output_file=file.path(dirname(input_file), out_dir, 'about.html'))})
-output: html_documment
+output: html_document
 ---
 
-Here is some information about me and the things I will be posting.
+Spring 2021 at Portland State University I took an introduction to R statistics class at Portland State University. Below is a list with short descriptions of each page. 
+
+* **NYC Flights Data** : This is where ... 
+
+* **COVID-19 Data** : Here is a project where ... 
+
+* **Kobe Hotshots Data** : Kobe
+
+* **Global Fuel Data** : Data boi 
+
+* **Oregon Grown** : GIS attempt with R 
 

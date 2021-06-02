@@ -1,6 +1,7 @@
 ---
 name: "my-website"
 output_dir: "docs"
+output: html_document
 navbar:
   title: "Randi Bolt"
   left:
@@ -10,5 +11,4 @@ navbar:
       href: about.html
     - text: "NYC Flights Data"
       href: nycflightsdata.html
-output: html_documment
 ---
