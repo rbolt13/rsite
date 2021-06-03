@@ -11,4 +11,6 @@ navbar:
       href: about.html
     - text: "NYC Flights Data"
       href: nycflightsdata.html
+    - text: "Kobe Hot Hands"
+      href: kobehothands.html
 ---
