@@ -24,8 +24,7 @@ library(ggthemes)
 library(maps)
 ```
 
-To begin we used 'dplyr' to figure out how many flights to Los Angeles (LAX) did each of the legacy carriers (AA, UA, DL or US) have in May from JFK, and what was their average duration. 
-
+#### To begin we used 'dplyr' to figure out how many flights to Los Angeles (LAX) did each of the legacy carriers (AA, UA, DL or US) have in May from JFK, and what was their average duration. 
 
 ```{r, echo=F}
 flights %>%
@@ -50,11 +49,12 @@ flights %>%
     source_note = "Note: There were no flights made from LAX to NYC in May 2013 from US"
   )
 ```
-
-
+<br/>
 Analysis : American Airlines had the most flights with the least amount of mean duration time of the four carriers chosen. 
+<br/>
+<br/>
 
-What was the shortest flight out of each airport in terms of distance? In terms of duration?
+#### What was the shortest flight out of each airport in terms of distance? In terms of duration?
 
 ```{r, echo=F}
 flights %>%
@@ -76,8 +76,8 @@ flights %>%
              min_dist = "By Distance",
              min_air_time = "By Flight Time")
 ```
-
-Analysis : Newark Liberty International Airport is has the shortest flight by both time and distance. 
+<br/>
+Newark Liberty International Airport is has the shortest flight by both time and distance. 
 
 ... [to be continued]
 
@@ -90,8 +90,7 @@ data(airports)
 data(planes)
 ```
 
-Our task : To compute the average delay by destination, then join on the airports data frame so we can show the spatial distribution of delays. 
-
+#### Compute the average delay by destination, then join on the airports data frame so we can show the spatial distribution of delays. 
 ```{r, echo=F}
 #avg.dest.delay : modified dataset 
 #group flights data set by destination 
@@ -116,4 +115,4 @@ avg.dest.delay  %>%
   guides(colour = 'legend')
 ```
 
-Analysis : West coast best coast. 
+West coast best coast. 
