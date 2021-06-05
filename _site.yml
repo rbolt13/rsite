@@ -13,4 +13,6 @@ navbar:
       href: nycflightsdata.html
     - text: "Kobe Hot Hands"
       href: kobehothands.html
+    - text: "Global Fuel Data"
+      href: globalfueldata.html
 ---

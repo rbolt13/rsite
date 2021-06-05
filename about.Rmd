@@ -14,7 +14,7 @@ Below is a list with short descriptions of each page.
 
 * [**Kobe Hot Hands**](https://rbolt13.github.io/rsite/kobehothands.html) : For our first project we took a look at Kobe Bryant's performance with the Los Angeles Lakers in the 2009 NBA finals when playing against the Orlando Magic. This game earned Kobe the title of *Most Valuable Player*, and this study uses data from that game to investigate : Does Kobe Bryant have Hot Hands? 
 
-* **Global Fuel Data** : Data boi 
+* [**Global Fuel Data**](https://rbolt13.github.io/rsite/globalfueldata.html) : For our second project of the term we were given the world power plant data set and tasked to come up with a question we could investigate graphically. 
 
 * **COVID-19 Data** : Here is a project where ... 
 

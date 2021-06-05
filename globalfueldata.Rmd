@@ -1,0 +1,102 @@
+---
+title: "Global Fuel Data"
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'globalfueldata.html'))})
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(ggthemes)
+library(dplyr) # tidy data
+```
+
+```{r load_data, echo=FALSE}
+power <- read.csv('globalpowerplant/global_power_plant_database.csv',
+                  na.strings = c(NA,"","NA"),
+                  header=T)
+```
+
+```{r,include=FALSE}
+#FILTER DATA : 
+#2015 and 2017 filtered for NA's
+power <- power[!is.na(power$generation_gwh_2015),]
+power <- power[!is.na(power$generation_gwh_2017),]
+#subset "United States of America"
+power <- subset(power, country_long == "United States of America")
+#manipulate data to get total power used in 2013 and 2017 for Gas, Hydro, and Solar power
+tidy.power <- power %>%
+  filter(primary_fuel%in%c("Hydro" , "Gas"),
+         ) %>%
+  group_by(primary_fuel) %>%
+  summarise(total_power_2013 = sum(generation_gwh_2013,na.rm=T),
+            total_power_2017 = sum(generation_gwh_2017,na.rm=T))
+tidy.power
+```
+
+#### Task
+
+Write down a question or hypothesis you are interested in exploring from the *world powerplant dataset* found in the [information is beautiful](https://informationisbeautiful.net/visualizations/mega-what-the-worlds-biggest-and-most-notable-power-plants/) website, which includes some nice visualizations.  The original data can be found [here](http://datasets.wri.org/dataset/globalpowerplantdatabase) along with a brief description.  You might want to work with just a subset of the data (e.g. one particular country), or you may choose to transform or summarize your data in the way that best allows you to explore your question.
+
+#### Question or Hypothesis
+
+How did Gas and Hydro power generated in the United States of America differ from 2013 to 2017?
+
+##### Base R plot(s)
+
+```{r, echo=FALSE, fig.height=6, fig.width=10}
+#set fig height and width to fit better in the knit markdown
+par(mfrow=c(1,2))
+barplot(tidy.power$total_power_2013,
+        names.arg = c("Gas", "Hydro"),
+        legend.text = c("Gas", "Hydro"),
+        beside = F,
+        density = c(25, 25),
+        angle = c(-45, 45),
+        col= c("red", "blue"),
+        border = "black",
+        main = "2013 Total Power Consumed",
+        ylim = c(0,1400000),
+        ylab = "Power in gwh")
+barplot(tidy.power$total_power_2017,
+        names.arg = c("Gas", "Hydro"),
+        legend.text = c("Gas", "Hydro"),
+        beside = F,
+        density = c(25, 25),
+        angle = c(-45, 45),
+        col= c("red", "blue"),
+        border = "black",
+        main = "2017 Total Power Consumed",
+        ylim = c(0,1400000),
+        ylab = "Power in gwh")
+```
+
+##### `ggplot` plot(s)
+
+```{r echo=FALSE}
+power_plot <- function(data, year, title){
+  ggplot(data) + 
+  geom_bar(aes(x = primary_fuel, 
+               y = year, 
+               fill = primary_fuel), 
+           stat = 'identity')+ 
+  theme_minimal() +
+  labs(x = "Fuel", y = "Power in gwh", fill = "Primary Fuels")  +
+  ggtitle(title, 
+          subtitle = "(Gas Vs. Hydro)") +
+  theme_bw(base_size = 10)  +
+  ylim(0,1400000) +
+  theme(plot.title = element_text(face="bold"), 
+        axis.title.x = element_text(face="bold", colour="red", size = 12),
+        axis.title.y = element_text(face="bold", colour="red", size = 12),
+        legend.title = element_text(face="bold", size = 10)) 
+  }
+#2013
+(power_plot13 <- power_plot(tidy.power, tidy.power$total_power_2013, "2013 Total Power Consumed"))
+#2017
+(power_plot17 <- power_plot(tidy.power, tidy.power$total_power_2017, "2017 Total Power Consumed"))
+```
