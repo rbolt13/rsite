@@ -49,7 +49,7 @@ names(dimnames(kobe_streak_table)) <- c("Kobe's Streaks Percentage")
 prop.table(kobe_streak_table)
 barplot(table(kobe_basket_streak), 
         main = "Kobe's Shooting Streaks", 
-        col = c("Orange"), 
+        col = heat.colors(5), 
         xlab = "Streak Length",
         ylab = "Amount",
         ylim = c(0,40))
@@ -57,4 +57,135 @@ barplot(table(kobe_basket_streak),
 
 **Kobe's typical streak length is 0, and his longest streak is 4 baskets.**
 
-We can also observe that his shooting average for this game was about 49%. 
+So Kobe had some long shooting streaks, but are they long enough to support the belief that he had *hot hands*? What can we compare them to? Consider the idea of *statistical independence*. A shooter with a hot hand will have shots that are *not* independent of one  another. Specifically, if the shooter makes their first shot, the hot hand model says they will have a *higher* probability of making their second shot. 
+
+During Kobe's career, the percentage of time he makes a basket (i.e. his shooting percentage) is about 45%, or equivalently  \[ P(\text{shot 1 = H}) = 0.45. \] If hot hands is really a thing, then when Kobe makes the first shot and has a hot hand (*not* independent shots), then  the probability that he makes his second shot would go up to, let's say, 60%,  \[ P(\text{shot 2 = H} \, | \, \text{shot 1 = H}) = 0.60. \] Because of these increased probabilites, you'd expect Kobe to have longer streaks. Now, if *hot hands* are just a myth, and each shot is independent of the next. When Kobe hits his first shot, the probability that he makes the second is still 0.45. \[ P(\text{shot 2 = H} \, | \, \text{shot 1 = H}) = 0.45. \] 
+
+### Question 2
+
+Now, having expressed the problem in this way we may assess if Kobe's shooting streaks are long enough to indicate that he has hot hands.  Here are two possible ways:
+
+2a) calculating the conditional probabilities and  
+2b) comparing Kobe's streak lengths to someone without hot hands (a simulated independent shooter). 
+
+#### Part 2.a -- Conditional probabilities 
+
+First calculate the total percentage of shots that resulted in a basket in the 2009 NBA finals, as \[\frac{\#\text{ hits}}{\text{total shots}}\] 
+
+```{r, echo=FALSE}
+print(paste(round(mean(kobe$basket == "H")*100,2),"%"))
+```
+
+**Kobe's scoring average for this 2009 NBA finals game was ~ 43.61%**
+
+Next we need to filter out the streaks that had at least the first shot resulting in a Hit -- by doing this we are conditioning the data to make the conditional statement. Since those streaks in which Kobe made the first shot have two shots or more, use the variable "shot.num" in the dataset to calculate $$P(\text{shot 2 = H} \, | \, \text{shot 1 = H})=\frac{\# (\text{shot 2 = H} \cup \text{shot 1 = H)}}{ \# (\text{shot 2 = H} \cup \text{shot 2 = M})}=\frac{\# \text{shot 2 = H}}{ \# \text{ shot 2}}$$ by identifying those observations corresponding to the second shots (i.e., those with "shot.num==2").
+
+```{r, echo=FALSE}
+shot_2 <- 0
+shot_2_hit <- 0
+for(x in 1:length(kobe$shot.num)){
+    if(kobe$shot.num[x]==2){
+        shot_2 = shot_2 +1
+    }
+    if(kobe$shot.num[x]==2 & kobe$basket[x]=="H"){
+        shot_2_hit = shot_2_hit +1
+    }
+    conditional_shot_2 = shot_2_hit / shot_2
+}
+print(paste(round(conditional_shot_2*100,2),"%"))
+```
+
+**Given that Kobe made the first basket (in a potential streak) there was about a 36.11% chance that he would also make the second.**
+
+Is there evidence to think that Kobe has *hot hands*?  How reliable is this conclusion? Provide an objective argument to justify your answer.
+
+<tab>**No, it is less likely that Kobe had hot hands given that the conditional probability of him making the second shot is less likely than than the probability that he will make any shot (36% < 43%).**</tab> 
+
+#### Part 2.b -- Simulating independent shooters
+
+The second alternative is to compare Kobe's streak lengths to the streak lengths of shooters without hot hands, or in other words to independent shooters. We don't have any data from shooters we know to have independent shots, but this type of data is very easy to simulate in R. In a simulation, you set the ground rules of a random process and then the computer uses random numbers to generate an outcome that adheres to those rules.  To simulate a single shot from an independent shooter with a shooting percentage of 50% we can use the code below (switch the chunk option `eval=FALSE` to `eval=TRUE` so that this chunk is evaluated). 
+
+```{r sim-basket, eval=FALSE, echo=FALSE}
+outcomes <- c("H", "M")
+sample(outcomes, size = 1, replace = TRUE, prob = c(0.5,0.5))
+```
+
+*Keep in mind that to make a valid comparison between Kobe and our simulated independent shooter, we need to align both their shooting percentage and the number of attempted shots.*
+
+Simulate 133 shots from an independent shooter *comparable* to Kobe and using `calc_streak`, compute the streak lengths of this independent shooter.
+```{r, echo=FALSE }
+outcomes <- c("H", "M")
+sample_basket <- sample(outcomes, size = 133, replace = TRUE, prob = c(0.5,0.5))
+sample_basket_streak <- get_streak(shots = sample_basket)
+```
+
+Use the R functions `table` and `quantile` to compare the streak length distribution of Kobe and that for this independent shooter
+```{r, echo=FALSE}
+# hit and miss numbers out of 133
+sb_table <- table(sample_basket)
+names(dimnames(sb_table)) <- c("Sample's Hit's and Misses")
+sb_table
+kb_table <- table(kobe$basket)
+names(dimnames(kb_table)) <- c("Kobe's Hit's and Misses")
+kb_table
+# hit and miss %
+names(dimnames(sb_table)) <- c("Sample's Hit and Miss Percentages")
+names(dimnames(kb_table)) <- c("Kobe's Hit and Miss Percentages")
+round(prop.table(sb_table)*100,2)
+round(prop.table(kb_table)*100,2)
+
+quantile(kobe_basket_streak)
+quantile(sample_basket_streak)
+```
+
+Build the R function `sim_generation`, which takes the number of independent shooters ($N$) to simulate, the number of shots taken by each shooter ($m$), and the shooting percentage ($perc$); and returns a data frame containing the outcomes for all shot taken by a single shooter in each row.  
+```{r, echo=FALSE}
+sim_generation <- function(N, m, perc){
+  df <- data.frame(Shot = paste("Shot#",1:m))
+  sim_gen_simple_basket <- NULL
+      for(x in 1:N){
+       sim_gen_sample_basket <- sample(outcomes, size = m, replace = TRUE, prob = c(perc,(1-perc)))
+       df <- cbind(df, sim_gen_sample_basket)
+      }
+  col_names = c("Shots", paste("Shooter #", 1:N))
+  colnames(df) <- col_names
+  df
+}
+```
+
+Use the function `sim_generation` to simulate $N=500$ shooters taking $m=133$ shots and $perc=0.45$. 
+```{r, warning=FALSE, echo=FALSE}
+sim_basket_df <- sim_generation(N=500, m=133, perc=0.45)
+barplot(table(get_streak(sim_generation(500, 133, 0.45))), 
+        main= "500 Sample Players", 
+        col = "orange",
+        xlab = "Streak Length",
+        ylab = "Amount",
+        ylim = c(0,200))
+```
+
+Get creative, use the results from the previous exercise to evaluate if Kobe has in fact hot hands.  For this you may use any R function of your choice, some options are `quantile`, `mean`, `median`, `histogram`, `barplot`.
+```{r, warning=FALSE, echo=FALSE}
+par(mfrow=c(1,2))
+barplot(table(kobe_basket_streak), 
+        main = "Kobe's Shooting Streaks", 
+        col = heat.colors(5), 
+        xlab = "Streak Length",
+        ylab = "Amount",
+        ylim = c(0,50))
+barplot(table(get_streak(sample_basket)), 
+        main= "Sample Player's Shooting Streaks", 
+        col = "orange",
+        xlab = "Streak Length",
+        ylab = "Amount",
+        ylim = c(0,50))
+```
+
+
+**The distribution of the graphs above indicates that Kobe did not have hot hands.** 
+
+
+_This homework was created by adapting materials from_
+<div id="license">
+OpenIntro, which is released under a [Creative Commons Attribution-ShareAlike 3.0 Unported](http://creativecommons.org/licenses/by-sa/3.0).
+</div>
