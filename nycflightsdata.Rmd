@@ -22,6 +22,8 @@ library(tidyverse)
 library(ggplot2)
 library(ggthemes)
 library(maps)
+library(lubridate)
+library(shiny)
 ```
 
 To begin we used 'dplyr' to figure out how many flights to Los Angeles (LAX) did each of the legacy carriers (AA, UA, DL or US) have in May from JFK, and what was their average duration. 
@@ -114,3 +116,33 @@ avg.dest.delay  %>%
 ```
 
 West coast best coast. 
+
+## Shiny Attempt 
+
+Average arrival delay : PDX, LAX and PHX 
+
+```{r, message=F}
+flight.delay <- flights %>% 
+  select(year,month,day,dest,arr_delay) %>%
+  mutate(date = make_date(year, month, day)) %>%
+  filter(dest%in%c("PDX","LAX","PHX")) %>%
+  group_by(dest,date) %>%
+  summarise(delay = mean(arr_delay, na.rm = T))
+
+ui <- fluidPage(
+  plotOutput("paired_plot")
+)
+server <- function(input, output) {
+  output$paired_plot <- renderPlot({
+  ggplot(flight.delay) +
+  aes_string(x="date",
+             y="delay",
+             color="dest") +
+  geom_point()
+  })
+}
+shinyApp(ui = ui, server = server)
+
+
+```
+
