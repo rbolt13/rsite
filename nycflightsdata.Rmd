@@ -121,7 +121,7 @@ West coast best coast.
 
 Average arrival delay : PDX, LAX and PHX 
 
-```{r, message=F}
+```{r, message=F, echo=F}
 flight.delay <- flights %>% 
   select(year,month,day,dest,arr_delay) %>%
   mutate(date = make_date(year, month, day)) %>%
@@ -142,7 +142,5 @@ server <- function(input, output) {
   })
 }
 shinyApp(ui = ui, server = server)
-
-
 ```
 
