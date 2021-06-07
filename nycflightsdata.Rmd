@@ -117,30 +117,30 @@ avg.dest.delay  %>%
 
 West coast best coast. 
 
-## Shiny Attempt 
+<!-- ## Shiny Attempt  -->
 
-Average arrival delay : PDX, LAX and PHX 
+<!-- Average arrival delay : PDX, LAX and PHX  -->
 
-```{r, message=F, echo=F}
-flight.delay <- flights %>% 
-  select(year,month,day,dest,arr_delay) %>%
-  mutate(date = make_date(year, month, day)) %>%
-  filter(dest%in%c("PDX","LAX","PHX")) %>%
-  group_by(dest,date) %>%
-  summarise(delay = mean(arr_delay, na.rm = T))
+<!-- ```{r, message=F, echo=F} -->
+<!-- flight.delay <- flights %>%  -->
+<!--   select(year,month,day,dest,arr_delay) %>% -->
+<!--   mutate(date = make_date(year, month, day)) %>% -->
+<!--   filter(dest%in%c("PDX","LAX","PHX")) %>% -->
+<!--   group_by(dest,date) %>% -->
+<!--   summarise(delay = mean(arr_delay, na.rm = T)) -->
 
-ui <- fluidPage(
-  plotOutput("paired_plot")
-)
-server <- function(input, output) {
-  output$paired_plot <- renderPlot({
-  ggplot(flight.delay) +
-  aes_string(x="date",
-             y="delay",
-             color="dest") +
-  geom_point()
-  })
-}
-shinyApp(ui = ui, server = server)
-```
+<!-- ui <- fluidPage( -->
+<!--   plotOutput("paired_plot") -->
+<!-- ) -->
+<!-- server <- function(input, output) { -->
+<!--   output$paired_plot <- renderPlot({ -->
+<!--   ggplot(flight.delay) + -->
+<!--   aes_string(x="date", -->
+<!--              y="delay", -->
+<!--              color="dest") + -->
+<!--   geom_point() -->
+<!--   }) -->
+<!-- } -->
+<!-- shinyApp(ui = ui, server = server) -->
+<!-- ``` -->
 
