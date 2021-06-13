@@ -15,4 +15,8 @@ navbar:
       href: kobehothands.html
     - text: "Global Fuel Data"
       href: globalfueldata.html
+    - text: "Covid 19 Data"
+      href: covid.html
+    - text: "Contact"
+      href: contact.html
 ---

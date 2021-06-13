@@ -16,9 +16,7 @@ Below is a list with short descriptions of each page.
 
 * [**Global Fuel Data**](https://rbolt13.github.io/rsite/globalfueldata.html) : For our second project of the term we were given the world power plant data set and tasked to come up with a question we could investigate graphically. 
 
-* **COVID-19 Data** : The third and final project for Statistics 363 : Introduction to R, had us looking at data from the COVID-19 pandemic. 
+* [**COVID-19 Data**](https://rbolt13.github.io/rsite/covid.html) : The third and final project for Statistics 363 : Introduction to R, had us looking at data from the COVID-19 pandemic. 
 
-* **Oregon Grown** : Oregon Grown is a project I worked on for an Introduction to GIS at Portland Community College. The project was originally done in ArcPro and presented at GIS in Action April 2021. This is my attempt to recreate aspects of this project but with further statistical analysis in R. 
-
-* **Contact** : Here you will find my email adress and a link to github. 
+* [**Contact**](https://rbolt13.github.io/rsite/contact.html) : Here you will find my email adress and a link to github. 
 

@@ -8,10 +8,10 @@ knit: (function(input_file, encoding) {
 output: html_document
 ---
 
-![](images/blue_r.jpg)
-
 #### Hello!!
 
-My name is Randi Bolt and I am currently a junior studying statistics at Portland State University. I began this site at the end of Spring term 2021 to post the various projects and assignments I worked on this term in Statistics 363 : Introduction to R. I will be posting other personal projects and discoveries here as well. Check out the about page for more information on each tab.
+My name is Randi Bolt and I am currently a junior studying statistics at Portland State University. I began this site at the end of Spring term 2021 to post the various projects and assignments I worked on this term in Statistics 363 : Introduction to R. Check out the about page for more information on each tab, and the contact page to get in touch and check out some of my other work and websites. 
 
 Note : This site is currently under construction. Some pages may have blank spots or be empty all together. I will update this message once the site is _finalized_. 
+
+![](images/blue_r.jpg)

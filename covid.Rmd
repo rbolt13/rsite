@@ -1,0 +1,11 @@
+---
+title: "Covid 19 Data"
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'covid.html'))})
+output: html_document
+---
+
+## Under Construction 
