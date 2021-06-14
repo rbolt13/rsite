@@ -1,5 +1,5 @@
 ---
-title: "Covid 19 Data"
+title: "Covid 19"
 knit: (function(input_file, encoding) {
   out_dir <- 'docs';
   rmarkdown::render(input_file,
@@ -8,4 +8,314 @@ knit: (function(input_file, encoding) {
 output: html_document
 ---
 
-## Under Construction 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+library(magrittr)
+library(dplyr)
+library(readr)
+library(tidyr)
+library(lubridate)
+library(pander)
+library(ggplot2)
+library(scales) #commas 
+library(gt) #format tables
+# Great Looking Tables Resource : https://blog.rstudio.com/2020/04/08/great-looking-tables-gt-0-2/
+```
+
+## Background and Data
+
+Although by this point some of you may be avoiding the information overload surrounding Covid-19, understanding what is currently happening by getting up-to-date data directly from the source, and extracting one's own conclusions can be empowering. 
+
+At this point of the term you've already an R toolbox broad enough to tackle the massive amount of data found in Johns Hopkins COVID-19 repository [(click here)](https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data).  These data has been updated daily since the COVID-19 pandemic started. I also included links to other supplementary data sets to **potentially** explore the effectiveness of measures taken throughout the pandemic, including-mask use and vaccination. The datasets included are: 
+
+1. **covid.ts.cases**: daily time series for the confirmed number of COVID-19 cases at the county level for the US (file description [here](https://github.com/CSSEGISandData/COVID-19/blob/master/csse_covid_19_data/csse_covid_19_time_series/README.md)).
+
+2.  **covid.ts.deaths**: daily time series for the confirmed number of COVID-19 deaths at the county level for the US (file description [here](https://github.com/CSSEGISandData/COVID-19/blob/master/csse_covid_19_data/csse_covid_19_time_series/README.md)).
+
+3. **covid.usa.daily**: COVID-19 USA daily state reports with the number of confirmed cases between April 14th and May 7th (file description [here](https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data#daily-reports-csse_covid_19_daily_reports)).
+
+
+4. **Vaccination data**: state level COVID-19 daily vaccination numbers time series data from the Johns Hopkins University repository (file description [here](https://github.com/govex/COVID-19/blob/master/data_tables/vaccine_data/us_data/readme.md), )
+
+5. **Mask use data**: information on mask use in the NY Times repository (file description [here](https://github.com/nytimes/covid-19-data/tree/master/mask-use#readme)).
+
+6. **State policy data**: data files (one file by state) about dates and description of policies going into/out of effect.  To load data for a particular state go to [this link](https://github.com/govex/COVID-19/tree/govex_data/data_tables/policy_data/table_data/Current), find the name 
+of the state file you want to work with.  
+
+Here is the data:
+
+```{r load_data}
+# confirmed COVID-19 time series cases US (trimmed to include from 11/01/2020 to 05/12/2021)
+covid.usa.ts.confirmed <- read_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv') %>% select(c(1:11,296:488))
+
+# Confirmed COVID-19 time series deaths US (trimmed to include from 11/01/2020 to 05/12/2021)
+covid.usa.ts.deaths <- read_csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_US.csv') %>% select(c(1:11,296:488))
+
+# Daily data summary by state for 05-12-2021
+covid.usa.daily <- read_csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports_us/05-12-2021.csv") 
+
+# US vaccinated people data
+vacc.people <- read_csv("https://raw.githubusercontent.com/govex/COVID-19/master/data_tables/vaccine_data/us_data/time_series/people_vaccinated_us_timeline.csv")
+
+# mask use data
+maskuse <- read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/mask-use/mask-use-by-county.csv")
+
+# Texas
+policytrackerTX <- read_csv("https://raw.githubusercontent.com/govex/COVID-19/govex_data/data_tables/policy_data/table_data/Current/Texas_policy.csv")
+
+# Florida
+policytrackerFL <- read_csv("https://raw.githubusercontent.com/govex/COVID-19/govex_data/data_tables/policy_data/table_data/Current/Florida_policy.csv")
+
+# Hawaii
+policytrackerHI <- read_csv("https://raw.githubusercontent.com/govex/COVID-19/govex_data/data_tables/policy_data/table_data/Current/Hawaii_policy.csv")
+
+# Maine
+policytrackerME <- read_csv("https://raw.githubusercontent.com/govex/COVID-19/govex_data/data_tables/policy_data/table_data/Current/Maine_policy.csv")
+
+# Montana
+policytrackerMT <- read_csv("https://raw.githubusercontent.com/govex/COVID-19/govex_data/data_tables/policy_data/table_data/Current/Montana_policy.csv")
+
+# California 
+policytrackerCA <- read_csv("https://raw.githubusercontent.com/govex/COVID-19/govex_data/data_tables/policy_data/table_data/Current/California_policy.csv")
+
+```
+
+## Part 1: Wrangling the COVID-19 time series data
+
+1. Using the time series data sets `covid.usa.ts.confirmed` and `covid.use.ts.deaths`, which are both at the county level and are in wide format, reshape them into long format (using either of the functions `gather` or `pivot_longer`) to generate a single new data frame with the daily time series **BY STATE** including both number of confirmed cases and deaths, so that you have one row for each combination of state and date.  Call this new data frame `covid.usa.states.ts`.  **Note**: after reshaping your file into long format, your new `date` column (or however you decide to call it) needs to be converted into a `Date-Time` type variable. For example, if your variable is called `my.date.variable`, you can make this conversion using `lubridate::mdy(my.date.variable)`.
+
+```{r, echo=F}
+# long.deaths.by.state : long form of covid.usa.ts.deaths
+# pivot_longer : takes in the columns from "10/31/20":"5/11/21"
+# names_to : renames that column dates
+# values_to : output values as "deaths"
+# select : columns Province_State , dates, and deaths
+# group_by : Province_State and dates
+# summarize : set deaths = to the sum of deaths (per state, per day)
+# mutates : formats Dates into month/day/year
+long.deaths.by.state <- covid.usa.ts.deaths %>%
+  pivot_longer(cols = "11/1/20":"5/11/21",
+               names_to = "Dates",
+               values_to = "Deaths") %>%
+  select(Province_State, Dates, Deaths) %>%
+  group_by(Province_State, Dates) %>%
+  summarise(Deaths = sum(Deaths))  %>%
+  mutate(Dates = mdy(Dates))
+# long.confimed.by.state : long form of covid.usa.ts.confimed
+# similar code as above but Confirmed_Cases instead of Deaths
+long.confirmed.by.state <- covid.usa.ts.confirmed %>%
+  pivot_longer(cols = "11/1/20":"5/11/21",
+               names_to = "Dates",
+               values_to = "Confirmed_Cases") %>%
+  select(Province_State, Dates, Confirmed_Cases) %>%
+  group_by(Province_State, Dates) %>%
+  summarise(Confirmed_Cases = sum(Confirmed_Cases))  %>%
+  mutate(Dates = mdy(Dates))
+# covid.usa.states.ts : single data frame with daily time series by state
+# select dates, deaths, and province_state from long.deaths.by.state df
+# full join with long.confirmed.by.state
+# select dates, confirmed_cases and province_state from long.confimed.by.state
+# join by Province_State and Dates
+covid.usa.states.ts <- 
+  long.deaths.by.state %>%
+  select(Dates, Deaths, Province_State) %>%
+  full_join(long.confirmed.by.state %>%
+              select(Dates, Confirmed_Cases, Province_State), 
+            by = c("Province_State","Dates"))
+# output new dataframe covid.usa.states.t
+head(covid.usa.states.ts, n = 5)
+```
+
+2. Append to `covid.usa.states.ts` (created in previous problem) all of the information from matching rows in `vacc.people` (without repeating columns with the same info in the two data sets). 
+
+```{r, echo=F}
+# Appending covid.usa.states.ts to include people fully and partially vaccinated
+# Using the same df select dates, province_state, deathes, and confirmed_cases
+# full join with vacc.people
+# select Date, Province_State, People_Fully_Vaccinated, and People_Partially_Vaccinated
+# join by "Dates"="Date" and "Province_State"
+covid.usa.states.ts <- 
+  covid.usa.states.ts %>% 
+  select(Dates, Province_State, Deaths, Confirmed_Cases) %>%
+  full_join(vacc.people %>% 
+              select(Date, Province_State, People_Fully_Vaccinated, People_Partially_Vaccinated),
+            by = c("Dates"="Date","Province_State")) 
+# output appended covid.usa.states.ts
+head(covid.usa.states.ts, n = 5)
+```
+
+Note: People_Fully_Vaccinated and People_Partially_Vaccinated show as NA because of the dates displayed were before the vaccine was released. 
+
+## Part 2: Let's use the data
+
+1. Using `covid.usa.daily` select *3 highly impacted states*, *3 mildly impacted states* by COVID-19, where by 'highly impacted' I mean the states with high numbers of confirmed cases.  
+
+```{r, echo=F, results=F}
+# arrange covid.usa.daily in decending order of Confirmed cases 
+covid.usa.daily %>%
+  arrange(desc(Confirmed))
+```
+
+**Highly Impacted States** 
+
+* California (3,763,281 confirmed)
+* Texas (2,922,680 confirmed)
+* Florida (2,278,549 confirmed)
+
+
+**Mildly Impacted States** 
+
+* Hawaii (34,917 confirmed)
+* Maine (64,748 confirmed)
+* Montana (110,317 confirmed)
+
+2. Create a visualization of the evolution of confirmed cases, deaths, and people vaccinated for each of the 6 states identified as *highly* and *mildly* impacted (use the `covid.usa.states.ts` data.frame to create the figure).
+
+```{r, echo=F}
+# state vectors
+highly.impacted <- c("California", "Texas", "Florida")
+mildly.impacted <- c("Hawaii", "Maine", "Montana")
+# column title vector
+col.titles <- c("Dates", "Province_State", "People","title", "id")
+# color palettes 
+highly.impacted.colors <- c("royalblue1", "steelblue1","turquoise4")
+mildly.impacted.colors <- c("coral", "orangered2","darkred")
+```
+
+```{r, echo=F}
+# vectors 
+
+# state vectors
+highly.impacted <- c("California", "Texas", "Florida")
+mildly.impacted <- c("Hawaii", "Maine", "Montana")
+# column title vector
+col.titles <- c("Dates", "Province_State", "People","title", "id")
+# color palettes 
+highly.impacted.colors <- c("royalblue1", "steelblue1","turquoise4")
+mildly.impacted.colors <- c("coral", "orangered2","darkred")
+```
+
+```{r, echo=F, warning=F}
+# data set org. 
+# note 1 : each set covers 672 days 
+# note 2 : scale for deaths does not match cases and vaccinations
+# note 3 : scale for mild and high do not match 
+
+# mild cases, and vaccinations
+mild.cases <- covid.usa.states.ts %>%
+  filter(Province_State%in%mildly.impacted) %>%
+  rename(People = Confirmed_Cases) %>%
+  cbind(title = "Confirmed COVID Cases",
+        id = 1:672) # labeling each row (after join)
+mild.cases
+mild.vacc <- covid.usa.states.ts %>%
+  filter(Province_State%in%mildly.impacted) %>%
+  rename(People = People_Fully_Vaccinated) %>%
+  cbind(title = "People Fully Vaccinated",
+        id = 673:1344) 
+# high cases, and vaccinations 
+high.cases <- covid.usa.states.ts %>%
+  filter(Province_State%in%highly.impacted) %>%
+  rename(People = Confirmed_Cases) %>%
+  cbind(title = "Confirmed COVID Cases",
+        id = 1:672) 
+high.vacc <- covid.usa.states.ts %>%
+  filter(Province_State%in%highly.impacted) %>%
+  rename(People = People_Fully_Vaccinated) %>%
+  cbind(title = "People Fully Vaccinated",
+        id = 673:1344)
+# high and mild deaths 
+high.deaths <- covid.usa.states.ts %>%
+  filter(Province_State%in%highly.impacted) %>%
+  rename(People = Deaths) %>%
+  cbind(title = "COVID Deaths",
+        id = 1:672)
+mild.deaths <- covid.usa.states.ts %>%
+  filter(Province_State%in%mildly.impacted) %>%
+  rename(People = Deaths) %>%
+  cbind(title = "COVID Deaths",
+        id = 673:1344)
+```
+
+```{r, echo=F} 
+# joins 
+# note : death scales don't match 
+
+# mild join
+mild.merge <- mild.cases %>%
+  select(col.titles) %>%
+  full_join(mild.vacc %>%
+              select(col.titles),
+            by = col.titles)
+# high join
+high.merge <- high.cases %>%
+  select(col.titles) %>%
+  full_join(high.vacc %>%
+              select(col.titles),
+            by = col.titles) 
+```
+
+
+```{r, echo=F, warning=F}
+# mild cases and vaccinations 
+m <- mild.merge %>% 
+  ggplot(aes(x = Dates, y = People, color = Province_State)) +
+  geom_line(size = 1) +
+  ggtitle("Mildly Impacted States") +
+  xlab("Month") + ylab("Number of People") +
+  facet_wrap(~ title, nrow = 1) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%m") +
+  scale_y_continuous(label = comma) +
+  theme_minimal() + 
+  theme(strip.text = element_text(face = 'bold'),
+        plot.title = element_text(hjust = 0.5)) +
+  scale_color_manual(name = "States",
+                     values = mildly.impacted.colors)
+# high cases and vaccinations
+h <- high.merge %>% 
+  ggplot(aes(x = Dates, y = People, color = Province_State)) +
+  geom_line(size = 1) +
+  ggtitle("Highly Impacted States") +
+  xlab("Month") + ylab("Number of People") +
+  facet_wrap(~ title, nrow = 1) +
+  scale_x_date(date_breaks = "1 month", date_labels = "%m") +
+  scale_y_continuous(label = comma) +
+  theme_minimal() + 
+  theme( strip.text = element_text(face = 'bold'),
+         plot.title = element_text(hjust = 0.5)) +
+  scale_color_manual(name = "States",
+                     values = highly.impacted.colors)
+# high deaths 
+d1 <- high.deaths %>% 
+  ggplot(aes(x = Dates, y = People, color = Province_State)) +
+  geom_line(size = 1) +
+  ggtitle("Highly Impacted States") +
+  xlab("Month") + ylab("Deaths") +
+  facet_wrap(~ title, nrow = 1) + # keeps subtitle 
+  scale_x_date(date_breaks = "1 month", date_labels = "%m") +
+  scale_y_continuous(label = comma) +
+  theme_minimal() + 
+  theme( strip.text = element_text(face = 'bold'),
+         plot.title = element_text(hjust = 0.5)) +
+  scale_color_manual(name = "States",
+                     values = highly.impacted.colors)
+# mild deaths 
+d2 <- mild.deaths %>% 
+  ggplot(aes(x = Dates, y = People, color = Province_State)) +
+  geom_line(size = 1) +
+  ggtitle("Mildly Impacted States") +
+  xlab("Month") + ylab("Deaths") +
+  facet_wrap(~ title, nrow = 1) + # keeps subtitle 
+  scale_x_date(date_breaks = "1 month", date_labels = "%m") +
+  scale_y_continuous(label = comma) +
+  theme_minimal() + 
+  theme(strip.text = element_text(face = 'bold'),
+        plot.title = element_text(hjust = 0.5)) +
+  scale_color_manual(name = "States",
+                     values = mildly.impacted.colors)
+# arranged plots  
+grid.arrange(h, m, nrow = 2)
+grid.arrange(d1, d2, nrow = 2)
+```
+
+
