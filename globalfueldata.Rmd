@@ -13,6 +13,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(ggthemes)
 library(dplyr) # tidy data
+library(gridExtra)
+library(ggpubr)
 ```
 
 ```{r load_data, echo=FALSE}
@@ -95,9 +97,15 @@ power_plot <- function(data, year, title){
         axis.title.y = element_text(face="bold", colour="red", size = 12),
         legend.title = element_text(face="bold", size = 10)) 
 }
-par(mfrow=c(1,2))
 #2013
-(power_plot13 <- power_plot(tidy.power, tidy.power$total_power_2013, "2013 Total Power Consumed"))
+power_plot13 <- power_plot(tidy.power, tidy.power$total_power_2013, "2013 Total Power Consumed")
 #2017
-(power_plot17 <- power_plot(tidy.power, tidy.power$total_power_2017, "2017 Total Power Consumed"))
+power_plot17 <- power_plot(tidy.power, tidy.power$total_power_2017, "2017 Total Power Consumed")
+
+legend <- get_legend(power_plot13 + theme(legend.position = "bottom"))
+
+
+grid.arrange(arrangeGrob(power_plot13 + theme(legend.position = "none"), 
+             power_plot17+ theme(legend.position = "none"), 
+             nrow = 1), legend, nrow = 2, heights = c(10,1))
 ```
