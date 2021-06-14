@@ -197,7 +197,6 @@ highly.impacted.colors <- c("royalblue1", "steelblue1","turquoise4")
 mildly.impacted.colors <- c("coral", "orangered2","darkred")
 ```
 
-
 ```{r, echo=F}
 # data org. 
 # note 1 : scale for deaths does not match cases and vaccinations
@@ -314,4 +313,74 @@ d2 <- mild.deaths %>%
 # arranged plots  
 grid.arrange(h, m, nrow = 2)
 grid.arrange(d1, d2, nrow = 2)
+```
+
+3. Do you see any interesting change in the trajectories of the corresponding time series for the number of cases and deaths taking place with vaccinations?  Produce **meaningful** summaries that enable you to quantify this change (e.g., average number of new cases in windows of 90 days before vs 90 days after vaccination started). One or two summary measures is good.  Make either a table or a figure to display your findings and comment on them.
+
+```{r, echo=F, warning=F}
+# function for 90 day summaries of avg cases and deaths
+state.90.day.sums <- function(state, date1, date2, title){
+  covid.usa.states.ts %>%
+  filter(Province_State%in%c(state)) %>%
+  group_by(Dates >= date1 & Dates <= date2) %>%
+  summarise(
+    "Average Confirmed Cases" = mean(Confirmed_Cases, na.rm = TRUE),
+    "Average Deaths" = mean(Deaths, na.rm = TRUE)) %>% 
+  filter(`Dates >= date1 & Dates <= date2` == TRUE) %>%
+    select("Average Confirmed Cases", "Average Deaths") %>%
+    pivot_longer(cols = "Average Confirmed Cases":"Average Deaths",
+                 names_to = title)}
+# function that joins the before data with the after and creates a pretty table 
+state.90.day.join <- function(before, after, state){
+  before %>% 
+    select("ninety_days_before_vacc","value") %>%
+    left_join(after %>% select("ninety_days_after_vacc","value"),
+              by = c("ninety_days_before_vacc"="ninety_days_after_vacc")) %>%
+    rename("cases_v_deaths" = "ninety_days_before_vacc",
+           "ninety_days_before_vacc" = "value.x",
+           "ninety_days_after_vacc" = "value.y") %>%
+    gt() %>%
+    fmt_number(columns = vars(ninety_days_before_vacc), decimals = 2) %>%
+    fmt_number(columns = vars(ninety_days_after_vacc), decimals = 2) %>%
+  tab_header(
+    title = md(state),
+    subtitle = "Average Daily COVID Cases and Deaths 90 Days Before and After the Vaccine"
+  ) %>%
+  cols_label(
+    ninety_days_before_vacc = "90 Days Before Vaccine",
+    ninety_days_after_vacc  = "90 Days After Vaccine",
+    cases_v_deaths = "") 
+}
+# used covid.usa.states.ts data to find first data with data for "fully vaccinated"
+# used as.Date() +/- 90 to figure out dates 
+# Hawaii 
+before.HW <- state.90.day.sums("Hawaii","2020-11-11","2021-02-09", "ninety_days_before_vacc") 
+after.HW <- state.90.day.sums("Hawaii","2021-02-10","2021-05-11", "ninety_days_after_vacc")
+HW.join <- state.90.day.join(before.HW, after.HW, "Hawaii")
+HW.join
+# Maine
+before.ME <- state.90.day.sums("Maine","2020-10-09","2021-01-07", "ninety_days_before_vacc") 
+after.ME <- state.90.day.sums("Maine","2021-01-08","2021-04-08", "ninety_days_after_vacc")
+ME.join <- state.90.day.join(before.ME, after.ME, "Maine")
+ME.join
+# Montana
+before.MT <- state.90.day.sums("Montana","2020-10-21","2021-01-19", "ninety_days_before_vacc") 
+after.MT <- state.90.day.sums("Montana","2021-01-20","2021-04-20", "ninety_days_after_vacc")
+MT.join <- state.90.day.join(before.MT, after.MT, "Montana")
+MT.join
+# California
+before.CA <- state.90.day.sums("California","2020-11-09","2021-02-07", "ninety_days_before_vacc")
+after.CA <- state.90.day.sums("California","2021-02-08","2021-05-09", "ninety_days_after_vacc")
+CA.join <- state.90.day.join(before.CA, after.CA, "California")
+CA.join
+# Florida
+before.FL <- state.90.day.sums("Florida","2020-10-06","2021-01-04", "ninety_days_before_vacc")
+after.FL <- state.90.day.sums("Florida","2021-01-05","2021-04-05", "ninety_days_after_vacc")
+FL.join <- state.90.day.join(before.FL, after.FL, "Florida")
+FL.join
+# Texas 
+before.TX <- state.90.day.sums("Texas","2020-10-07","2021-01-05", "ninety_days_before_vacc")
+after.TX <- state.90.day.sums("Texas","2021-01-06","2021-04-06", "ninety_days_after_vacc")
+TX.join <- state.90.day.join(before.TX, after.TX, "Texas")
+TX.join
 ```
