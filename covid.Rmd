@@ -19,7 +19,7 @@ library(pander)
 library(ggplot2)
 library(scales) #commas 
 library(gt) #format tables
-# Great Looking Tables Resource : https://blog.rstudio.com/2020/04/08/great-looking-tables-gt-0-2/
+library(gridExtra) # grid.arrange
 ```
 
 ## Background and Data
@@ -184,7 +184,9 @@ mildly.impacted.colors <- c("coral", "orangered2","darkred")
 
 ```{r, echo=F}
 # vectors 
-
+# id's (each set covers 225 days for 3 states, 225*3 = 675)
+a <- 1:675
+b <- 676:1350
 # state vectors
 highly.impacted <- c("California", "Texas", "Florida")
 mildly.impacted <- c("Hawaii", "Maine", "Montana")
@@ -195,52 +197,49 @@ highly.impacted.colors <- c("royalblue1", "steelblue1","turquoise4")
 mildly.impacted.colors <- c("coral", "orangered2","darkred")
 ```
 
-```{r, echo=F, warning=F}
-# data set org. 
-# note 1 : each set covers 672 days 
-# note 2 : scale for deaths does not match cases and vaccinations
-# note 3 : scale for mild and high do not match 
 
+```{r, echo=F}
+# data org. 
+# note 1 : scale for deaths does not match cases and vaccinations
+# note 2 : scale for mild and high do not match 
 # mild cases, and vaccinations
 mild.cases <- covid.usa.states.ts %>%
   filter(Province_State%in%mildly.impacted) %>%
   rename(People = Confirmed_Cases) %>%
   cbind(title = "Confirmed COVID Cases",
-        id = 1:672) # labeling each row (after join)
-mild.cases
+        id = a) 
 mild.vacc <- covid.usa.states.ts %>%
   filter(Province_State%in%mildly.impacted) %>%
   rename(People = People_Fully_Vaccinated) %>%
   cbind(title = "People Fully Vaccinated",
-        id = 673:1344) 
+        id = b) 
 # high cases, and vaccinations 
 high.cases <- covid.usa.states.ts %>%
   filter(Province_State%in%highly.impacted) %>%
   rename(People = Confirmed_Cases) %>%
   cbind(title = "Confirmed COVID Cases",
-        id = 1:672) 
+        id = a) 
 high.vacc <- covid.usa.states.ts %>%
   filter(Province_State%in%highly.impacted) %>%
   rename(People = People_Fully_Vaccinated) %>%
   cbind(title = "People Fully Vaccinated",
-        id = 673:1344)
+        id = b)
 # high and mild deaths 
 high.deaths <- covid.usa.states.ts %>%
   filter(Province_State%in%highly.impacted) %>%
   rename(People = Deaths) %>%
   cbind(title = "COVID Deaths",
-        id = 1:672)
+        id = a)
 mild.deaths <- covid.usa.states.ts %>%
   filter(Province_State%in%mildly.impacted) %>%
   rename(People = Deaths) %>%
   cbind(title = "COVID Deaths",
-        id = 673:1344)
+        id = b)
 ```
 
 ```{r, echo=F} 
 # joins 
 # note : death scales don't match 
-
 # mild join
 mild.merge <- mild.cases %>%
   select(col.titles) %>%
@@ -254,7 +253,6 @@ high.merge <- high.cases %>%
               select(col.titles),
             by = col.titles) 
 ```
-
 
 ```{r, echo=F, warning=F}
 # mild cases and vaccinations 
@@ -317,5 +315,3 @@ d2 <- mild.deaths %>%
 grid.arrange(h, m, nrow = 2)
 grid.arrange(d1, d2, nrow = 2)
 ```
-
-
