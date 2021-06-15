@@ -12,6 +12,7 @@ Bookdown (referenced in article above) : https://bookdown.org/yihui/rmarkdown/rm
 
 Introduction to Creating Tables : https://gt.rstudio.com/articles/intro-creating-gt-tables.html
 
+Laying out multiple plots on a page : https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
 
 Addition Sites to Check Out : 
 
