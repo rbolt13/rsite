@@ -185,8 +185,8 @@ mildly.impacted.colors <- c("coral", "orangered2","darkred")
 ```{r, echo=F}
 # vectors 
 # id's (each set covers 225 days for 3 states, 225*3 = 675)
-a <- 1:675
-b <- 676:1350
+a <- 1:684
+b <- 685:1368
 # state vectors
 highly.impacted <- c("California", "Texas", "Florida")
 mildly.impacted <- c("Hawaii", "Maine", "Montana")
@@ -384,3 +384,175 @@ after.TX <- state.90.day.sums("Texas","2021-01-06","2021-04-06", "ninety_days_af
 TX.join <- state.90.day.join(before.TX, after.TX, "Texas")
 TX.join
 ```
+
+4. Using information from the `maskuse` data explore if mask use seems to correlate with your selected states being midly or highly impacted.
+
+```{r, echo=F, warning=F}
+# function for maskuse data
+mask.longer <- function(state, color){
+  covid.usa.ts.deaths %>%
+  filter(Province_State == state) %>%
+  select(FIPS,Admin2) %>%
+  left_join(maskuse %>% select(COUNTYFP,NEVER,RARELY,SOMETIMES,FREQUENTLY,ALWAYS) %>%
+              mutate(COUNTYFP =as.numeric(COUNTYFP)),
+            by = c("FIPS"="COUNTYFP")) %>%
+  pivot_longer(
+    cols = "NEVER":"ALWAYS",
+    names_to = "mask_use") %>%
+  mutate(value = as.numeric(value)) %>%
+  group_by(mask_use) %>%
+  summarise(mean_mask_use = mean(value,na.rm=T)*100) %>%
+  ggplot() +
+  geom_col(aes(y = mask_use, x = mean_mask_use),
+                 fill = color) +
+  ggtitle(state) +
+  xlab("Average Percent") + ylab("Frequency") +
+  xlim(0,90) +
+  theme_minimal() + 
+  theme(
+    strip.text = element_text(face = 'bold'),
+    plot.title = element_text(hjust = 0.5))
+}
+# California 
+california.mask.longer <- mask.longer("California", 'royalblue1')
+# Florida
+florida.mask.longer <- mask.longer("Florida", 'steelblue1')
+# Texas
+texas.mask.longer <- mask.longer("Texas", 'turquoise4')
+# Hawaii
+hawaii.mask.longer <- mask.longer("Hawaii", 'coral')
+# Maine 
+maine.mask.longer <- mask.longer("Maine", 'orangered2')
+# Montana 
+montana.mask.longer <- mask.longer("Montana", 'darkred')
+grid.arrange(california.mask.longer, 
+             florida.mask.longer + theme(axis.title.y = element_blank()), 
+             texas.mask.longer + theme(axis.title.y = element_blank()),
+             hawaii.mask.longer, 
+             maine.mask.longer + theme(axis.title.y = element_blank()), 
+             montana.mask.longer + theme(axis.title.y = element_blank()), 
+             nrow = 2, top = "Maskuse")
+
+```
+
+5. Formulate and explore ONE question about the 3 highly and 3 mildly affected states with any of the datasets I have provided, or by using the policy tracker datasets corresponding to your states.
+
+**How do open and closure days relate to number of Deaths, Confirmed Cases, and People Fully Vaccinated from 3 highly affected states (California, Florida, Texas), and 3 mildly affected states (Hawaii, Maine, Montana)?**
+
+Note:
+
+<span style="color: yellow;">Opening are shown with gold vertical lines</span>
+
+<span style="color: red;">Closures are shown with red vertical lines</span>
+
+```{r, echo=F, warning=F}
+# function for confirmed cases 
+cases.open.close <- function(data, state, color.var){
+  #open dates
+  open <- data %>% 
+    filter(!is.na(`Opening (State)`)) %>%
+    select(date,
+         `Opening (State)`) %>%
+  mutate(date = dmy(date)) 
+  #closure dates
+  close <- data %>%
+  filter(!is.na(`Restrict/Close`)) %>%
+  select(date,
+         `Restrict/Close`) %>%
+  mutate(date = dmy(date)) 
+  #graph 
+  covid.usa.states.ts %>%
+  filter(Province_State%in%c(state)) %>%
+  ggplot(aes(x = Dates, y = Confirmed_Cases)) +
+  geom_line(size = 1, color = color.var) +
+  geom_vline(xintercept = open$date, color = "gold1", size = 1) +
+  geom_vline(xintercept = close$date, color = "red", size = 1) +
+  labs(title = "Confirmed Cases") +
+  xlab("Month") + ylab("Confirmed Cases") +
+  scale_x_date(date_breaks = "1 month", date_labels = "%m") +
+  scale_y_continuous(label = comma) +
+  theme_minimal() +
+  theme(
+    strip.text = element_text(face = 'bold'),
+    plot.title = element_text(hjust = 0.5)) 
+}
+# function for deaths
+deaths.open.close <- function(data, state, color.var){
+  #open dates
+  open <- data %>% 
+    filter(!is.na(`Opening (State)`)) %>%
+    select(date,
+         `Opening (State)`) %>%
+  mutate(date = dmy(date)) 
+  #closure dates
+  close <- data %>%
+  filter(!is.na(`Restrict/Close`)) %>%
+  select(date,
+         `Restrict/Close`) %>%
+  mutate(date = dmy(date)) 
+  #graph 
+  covid.usa.states.ts %>%
+  filter(Province_State%in%c(state)) %>%
+  ggplot(aes(x = Dates, y = Deaths)) +
+  geom_line(size = 1, color = color.var) +
+  geom_vline(xintercept = open$date, color = "gold1", size = 1) +
+  geom_vline(xintercept = close$date, color = "red", size = 1) +
+  labs(title = "Deaths") +
+  xlab("Month") + ylab("Deaths") +
+  scale_x_date(date_breaks = "1 month", date_labels = "%m") +
+  scale_y_continuous(label = comma) +
+  theme_minimal() +
+  theme(
+    strip.text = element_text(face = 'bold'),
+    plot.title = element_text(hjust = 0.5)) 
+}
+# function for vaccination 
+vacc.open.close <- function(data, state, color.var){
+  #open dates
+  open <- data %>% 
+    filter(!is.na(`Opening (State)`)) %>%
+    select(date,
+         `Opening (State)`) %>%
+  mutate(date = dmy(date)) 
+  #closure dates
+  close <- data %>%
+  filter(!is.na(`Restrict/Close`)) %>%
+  select(date,
+         `Restrict/Close`) %>%
+  mutate(date = dmy(date)) 
+  #graph 
+  covid.usa.states.ts %>%
+  filter(Province_State%in%c(state)) %>%
+  ggplot(aes(x = Dates, y = People_Fully_Vaccinated)) +
+  geom_line(size = 1, color = color.var) +
+  geom_vline(xintercept = open$date, color = "gold1", size = 1) +
+  geom_vline(xintercept = close$date, color = "red", size = 1) +
+  labs(title = "People Fully Vaccinated") +
+  xlab("Month") + ylab("People Fully Vaccinated") +
+  scale_x_date(date_breaks = "1 month", date_labels = "%m") +
+  scale_y_continuous(label = comma) +
+  theme_minimal() +
+  theme(
+    strip.text = element_text(face = 'bold'),
+    plot.title = element_text(hjust = 0.5)) 
+}
+# function that outputs all three graphs 
+graphs <- function(data, state, color){
+  state.cases.open.close <- cases.open.close(data, state, color)
+  state.deaths.open.close <- deaths.open.close(data,state,color)
+  state.vacc.open.close <- vacc.open.close(data,state, color)
+  grid.arrange(state.cases.open.close, state.deaths.open.close, state.vacc.open.close, nrow=2, top = state)
+  state.vacc.open.close
+}
+# states 
+CA.graphs <- graphs(policytrackerCA,"California",'royalblue1')
+FL.graphs <- graphs(policytrackerFL,"Florida",'steelblue1')
+TX.graphs <- graphs(policytrackerTX,"Texas",'turquoise4')
+HI.graphs <- graphs(policytrackerHI,"Hawaii",'coral')
+ME.graphs <- graphs(policytrackerME,"Maine",'orangered2')
+MT.graphs <- graphs(policytrackerMT,"Montana",'darkred')
+```
+
+
+
+
