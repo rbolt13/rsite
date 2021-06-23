@@ -13,16 +13,4 @@ This is the first website I have build using R to display projects I worked on d
 
 [Laying out multiple plots on a page](https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html)
 
-Addition Sites to Check Out : 
 
-R Markdown Gallery : https://rmarkdown.rstudio.com/gallery.html 
-
-R Markdown flexdashboard : https://rstudio.github.io/flexdashboard/
-
-Animated Map : https://www.pipinghotdata.com/posts/2021-02-15-gganimating-a-geographic-introduction/ 
-
-Covid-19 R Studio by Michael Clark : https://m-clark.github.io/posts/2020-03-23-covid/ 
-
-Blogdown Examples : https://alison.rbind.io/blog/2020-12-new-year-new-blogdown/
-
-Spotifyr : https://www.rcharlie.com/spotifyr/ 
