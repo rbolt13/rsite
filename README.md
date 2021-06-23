@@ -1,7 +1,9 @@
 # [rsite](https://rbolt13.github.io/rsite)
 Project By Randi Bolt
 
-This is the first website I have build using R to display projects I worked on during _STAT-363 : Intro to R_, Spring 2021. 
+My first website attempt using github and rstudio. The projects displayed on this site were made during a Portland State University class Spring 2021, _STAT-363 : Intro to R_.
+
+Projects include data from : NYC Flights, Kobe Bryant's 2009 NBA final's game against the Orlando Magic, Global Fuel Data, and COVID-19 Data. 
 
 ### Sources : 
 
