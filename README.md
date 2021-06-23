@@ -1,6 +1,4 @@
-# rsite
-
-LINK : https://rbolt13.github.io/rsite/index.html
+# [rsite](https://rbolt13.github.io/rsite)
 
 ABOUT : This is the first website I have build using R to display projects I worked on during STAT-363 : Intro to R. 
 
