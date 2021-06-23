@@ -10,8 +10,12 @@ output: html_document
 
 ## Email : rbolt@pdx.edu 
 
-Like what you see? Have specific questions on the data or how it is presented? Send me an email letting me know, and while you're at it check out my github, and a project I did using GIS and Arc Pro below.
+Like what you see? Have specific questions on the data or how it is presented? Send me an email letting me know.
 
-##### [Github](https://github.com/rbolt13)
+## Projects 
 
-#### [Oregon Grown](https://rbolt13.github.io/Oregon-Grown/)
+*[Github](https://github.com/rbolt13)* : See the code for this and other projects I've made. 
+
+*[Oregon Grown](https://rbolt13.github.io/Oregon-Grown/)* : This project was done fall term 2020 at Portland Community College using GIS and Arc Pro to investigate dispensary diversity in Oregon. 
+
+*[rsite2](https://rbolt13.github.io/rsite2/index.html)* : The sequel to this site, rsite2 houses my projects and explorations from the summer of 2021. 
