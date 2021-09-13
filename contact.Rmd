@@ -20,4 +20,6 @@ Like what you see? Have specific questions on the data or how it is presented? S
 
 *[rsite2](https://rbolt13.github.io/rsite2)* : The sequel to this site, rsite2 houses my projects and explorations from the summer of 2021. 
 
-*[Suns Basketball 2021](https://rbolt13.github.io/sunsbasketball2021/)* 
+*[Randi Grows](https://randigrows.netlify.app/about/)* : My first attempt with blogdown in R Studio. Post are mostly pictures of my garden.
+
+*[rbolt](https://rbolt.netlify.app/)* : This is my personal website, and growing portfolio created with blogdown in R Studio. 
