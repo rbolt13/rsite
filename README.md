@@ -5,16 +5,6 @@ Projects include data from : NYC Flights, Kobe Bryant's 2009 NBA final's game ag
 
 View [here](https://rbolt13.github.io/rsite)
 
-# Resources 
-
-[GitHub and RStudio](https://resources.github.com/whitepapers/github-and-rstudio/)
-
-[Bookdown (referenced in article above)](https://bookdown.org/yihui/rmarkdown/rmarkdown-site.html)
-
-[Introduction to Creating Tables](https://gt.rstudio.com/articles/intro-creating-gt-tables.html)
-
-[Laying out multiple plots on a page](https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html)
-
 # To Do
 * add content from class notes to NYC Flights Data
 * add more writing to Global Fuel Data  
@@ -25,3 +15,13 @@ View [here](https://rbolt13.github.io/rsite)
 ☑️ Update projects on contact page
 
 ☑️ Update README
+
+# Resources 
+
+[GitHub and RStudio](https://resources.github.com/whitepapers/github-and-rstudio/)
+
+[Bookdown (referenced in article above)](https://bookdown.org/yihui/rmarkdown/rmarkdown-site.html)
+
+[Introduction to Creating Tables](https://gt.rstudio.com/articles/intro-creating-gt-tables.html)
+
+[Laying out multiple plots on a page](https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html)
