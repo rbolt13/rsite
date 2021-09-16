@@ -5,7 +5,10 @@ knit: (function(input_file, encoding) {
   rmarkdown::render(input_file,
  encoding=encoding,
  output_file=file.path(dirname(input_file), out_dir, 'kobehothands.html'))})
-output: html_document
+output:
+  html_document:
+    toc: true
+    theme: united
 ---
 
 ![](images/lakers600.webp)
