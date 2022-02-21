@@ -12,14 +12,13 @@ output: html_document
 
 Like what you see? Have specific questions on the data or how it is presented? Send me an email letting me know.
 
-### Projects 
+### Links  
 
 *[Github](https://github.com/rbolt13)* : See the code for this and other projects I've made. 
 
-*[Oregon Grown](https://rbolt13.github.io/Oregon-Grown/)* : This project was done fall term 2020 at Portland Community College using GIS and Arc Pro to investigate dispensary diversity in Oregon. 
+*[rbolt.me](https://www.rbolt.me/)* : This is my personal blog, and undergrad portfolio created with blogdown, github, and netlify. 
 
 *[rsite2](https://rbolt13.github.io/rsite2)* : The sequel to this site, rsite2 houses my projects and explorations from the summer of 2021. 
 
-*[Randi Grows](https://randigrows.netlify.app/about/)* : My first attempt with blogdown in R Studio. Posts are mostly pictures of my garden.
+*[Oregon Grown](https://rbolt13.github.io/Oregon-Grown/)* : This project was done fall term 2020 at Portland Community College using GIS and Arc Pro to investigate dispensary diversity in Oregon. 
 
-*[rbolt](https://rbolt.netlify.app/)* : This is my personal website, and growing portfolio created with blogdown in R Studio. 
